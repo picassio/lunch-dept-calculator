@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  debtsAsDebtor Debt[]   @relation("Debtor")
+  debtsAsCreditor Debt[] @relation("Creditor")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model MenuItem {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Float
+  category  String   // food or drink
+  debts     Debt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Debt {
+  id           Int      @id @default(autoincrement())
+  debtorId     Int
+  creditorId   Int
+  menuItemId   Int
+  quantity     Int
+  totalPrice   Float
+  date         DateTime @default(now())
+  debtor       User     @relation("Debtor", fields: [debtorId], references: [id])
+  creditor     User     @relation("Creditor", fields: [creditorId], references: [id])
+  menuItem     MenuItem @relation(fields: [menuItemId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([debtorId])
+  @@index([creditorId])
+  @@index([menuItemId])
+}
