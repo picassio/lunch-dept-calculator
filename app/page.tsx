@@ -214,8 +214,8 @@ export default function Home() {
               <thead>
                 <tr>
                   <th>Người Dùng</th>
-                  <th className="text-right">Tổng Được Nợ (Cho Vay)</th>
-                  <th className="text-right">Tổng Đang Nợ (Vay)</th>
+                  <th className="text-right">Tổng Tiền Cho Vay</th>
+                  <th className="text-right">Tổng Tiền Phải Trả</th>
                   <th className="text-right">Số Dư</th>
                 </tr>
               </thead>
