@@ -11,9 +11,15 @@ const restaurantSchema = z.object({
 
 type RestaurantFormData = z.infer<typeof restaurantSchema>;
 
+interface MenuItem {
+  id: number;
+  name: string;
+}
+
 interface Restaurant {
   id: number;
   name: string;
+  menuItems?: MenuItem[];
 }
 
 export default function RestaurantsPage() {
@@ -27,7 +33,7 @@ export default function RestaurantsPage() {
     handleSubmit,
     reset,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<RestaurantFormData>({
     resolver: zodResolver(restaurantSchema),
   });
@@ -114,91 +120,128 @@ export default function RestaurantsPage() {
     setError('');
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="space-y-4 animate-fade-in">
+        <div className="h-8 w-40 skeleton mb-6"></div>
+        <div className="space-y-4">
+          <div className="h-10 skeleton"></div>
+          <div className="h-10 w-32 skeleton"></div>
+        </div>
+        <div className="h-64 skeleton mt-8"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Restaurants</h1>
-        
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-8">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-600">
-              Name
-            </label>
-            <input
-              {...register('name')}
-              type="text"
-              className="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-            )}
-          </div>
+    <div className="space-y-6 animate-fade-in">
+      <div className="card">
+        <div className="p-6">
+          <h1 className="text-2xl font-semibold mb-6">Restaurants</h1>
+          
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium mb-1">
+                Name
+              </label>
+              <input
+                {...register('name')}
+                type="text"
+                className="input"
+                placeholder="Enter restaurant name"
+              />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+              )}
+            </div>
 
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              {editingRestaurant ? 'Update Restaurant' : 'Add Restaurant'}
-            </button>
-            {editingRestaurant && (
+            <div className="flex gap-2">
               <button
-                type="button"
-                onClick={handleCancel}
-                className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                type="submit"
+                disabled={isSubmitting}
+                className="btn btn-primary px-4 py-2"
               >
-                Cancel
+                {isSubmitting ? (
+                  <span className="inline-flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : (
+                  editingRestaurant ? 'Update Restaurant' : 'Add Restaurant'
+                )}
               </button>
-            )}
-          </div>
-        </form>
+              {editingRestaurant && (
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="btn btn-secondary px-4 py-2"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
 
-        {error && (
-          <div className="rounded-md bg-red-50 p-4 mb-4">
-            <div className="text-sm text-red-700">{error}</div>
-          </div>
-        )}
+          {error && (
+            <div className="mt-4 p-4 rounded-md bg-red-50 border border-red-200">
+              <div className="text-sm text-red-700">{error}</div>
+            </div>
+          )}
+        </div>
+      </div>
 
-        <div className="mt-8">
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead className="bg-gray-50">
+      <div className="card">
+        <div className="table-container">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Menu Items</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {restaurants.length === 0 ? (
                 <tr>
-                  <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
-                    Name
-                  </th>
-                  <th className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
-                    Actions
-                  </th>
+                  <td colSpan={3} className="text-center py-8 text-muted-foreground">
+                    No restaurants found. Add your first restaurant above.
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {restaurants.map((restaurant) => (
+              ) : (
+                restaurants.map((restaurant) => (
                   <tr key={restaurant.id}>
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
-                      {restaurant.name}
+                    <td className="font-medium">{restaurant.name}</td>
+                    <td>
+                      {restaurant.menuItems ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800/20 dark:text-blue-400">
+                          {restaurant.menuItems.length} items
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">No items</span>
+                      )}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-right">
+                    <td className="text-right">
                       <button
                         onClick={() => handleEdit(restaurant)}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
+                        className="btn btn-secondary px-3 py-1 text-xs mr-2"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(restaurant.id)}
-                        className="text-red-600 hover:text-red-900"
+                        className="btn bg-red-500 text-white hover:bg-red-600 px-3 py-1 text-xs"
                       >
                         Delete
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

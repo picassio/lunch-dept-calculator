@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { formatCurrency } from '@/app/lib/formatCurrency';
+import { formatCurrency } from '../../lib/formatCurrency';
 
 interface User {
   id: number;
@@ -35,6 +35,7 @@ export default function IndividualDebtsPage() {
   const [debtsToCollect, setDebtsToCollect] = useState<Debt[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState<number | null>(null);
 
   useEffect(() => {
     fetch('/api/users')
@@ -76,6 +77,7 @@ export default function IndividualDebtsPage() {
       return;
     }
 
+    setDeleteLoading(debtId);
     try {
       const response = await fetch(`/api/debts?id=${debtId}`, {
         method: 'DELETE',
@@ -85,195 +87,182 @@ export default function IndividualDebtsPage() {
         throw new Error('Failed to delete debt');
       }
 
-      // Refresh debts after deletion
       fetchDebts();
     } catch {
       setError('Failed to delete debt');
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
   const totalOwed = debtsOwed.reduce((sum, debt) => sum + debt.totalPrice, 0);
   const totalToCollect = debtsToCollect.reduce((sum, debt) => sum + debt.totalPrice, 0);
+  const netBalance = totalToCollect - totalOwed;
 
-  if (loading && !selectedUser) return <div>Loading...</div>;
+  if (loading && !selectedUser) {
+    return (
+      <div className="space-y-4 animate-fade-in">
+        <div className="h-8 w-48 skeleton mb-6"></div>
+        <div className="h-12 w-64 skeleton"></div>
+        <div className="space-y-4 mt-8">
+          <div className="h-24 skeleton"></div>
+          <div className="h-64 skeleton"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const DebtTable = ({ debts, type }: { debts: Debt[], type: 'owed' | 'collect' }) => (
+    <div className="table-container">
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>{type === 'owed' ? 'Creditor' : 'Debtor'}</th>
+            <th>Item</th>
+            <th className="text-center">Qty</th>
+            <th className="text-right">Price/Item</th>
+            <th className="text-right">Total</th>
+            <th className="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {debts.map((debt) => (
+            <tr key={debt.id}>
+              <td className="whitespace-nowrap">
+                {new Date(debt.date).toLocaleDateString('vi-VN')}
+              </td>
+              <td className="font-medium">
+                {type === 'owed' ? debt.creditor.name : debt.debtor.name}
+              </td>
+              <td>{debt.menuItem.name}</td>
+              <td className="text-center">{debt.quantity}</td>
+              <td className="text-right">{formatCurrency(debt.menuItem.price)}</td>
+              <td className="text-right font-medium">{formatCurrency(debt.totalPrice)}</td>
+              <td className="text-right">
+                <button
+                  onClick={() => handleDeleteDebt(debt.id)}
+                  disabled={deleteLoading === debt.id}
+                  className="btn bg-red-500 text-white hover:bg-red-600 px-3 py-1 text-xs"
+                >
+                  {deleteLoading === debt.id ? (
+                    <span className="inline-flex items-center">
+                      <svg className="animate-spin -ml-1 mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                      </svg>
+                      Deleting...
+                    </span>
+                  ) : (
+                    'Delete'
+                  )}
+                </button>
+              </td>
+            </tr>
+          ))}
+          {debts.length === 0 && (
+            <tr>
+              <td colSpan={7} className="text-center py-8 text-muted-foreground">
+                No debts found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
 
   return (
-    <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm">
-      <h1 className="text-2xl font-semibold text-gray-800 mb-6">Individual Debts</h1>
+    <div className="space-y-6 animate-fade-in">
+      <div className="card">
+        <div className="p-6">
+          <h1 className="text-2xl font-semibold mb-6">Individual Debts</h1>
 
-      <div className="max-w-md">
-        <label htmlFor="user" className="block text-sm font-medium text-gray-600">
-          Select User
-        </label>
-        <select
-          id="user"
-          className="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          onChange={(e) => setSelectedUser(Number(e.target.value))}
-          value={selectedUser || ''}
-        >
-          <option value="">Select a user</option>
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.name}
-            </option>
-          ))}
-        </select>
+          <div className="max-w-md">
+            <label htmlFor="user" className="block text-sm font-medium mb-1">
+              Select User
+            </label>
+            <select
+              id="user"
+              className="input"
+              onChange={(e) => setSelectedUser(Number(e.target.value))}
+              value={selectedUser || ''}
+            >
+              <option value="">Select a user</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {error && (
+            <div className="mt-4 p-4 rounded-md bg-red-50 border border-red-200">
+              <div className="text-sm text-red-700">{error}</div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {error && (
-        <div className="rounded-md bg-red-50 p-4">
-          <div className="text-sm text-red-700">{error}</div>
-        </div>
-      )}
-
       {selectedUser && !loading && (
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-lg font-semibold text-blue-900">
-                Total Debt Owed: {formatCurrency(totalOwed)}
-              </p>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="card bg-red-50 dark:bg-red-900/10">
+              <div className="p-4">
+                <h3 className="text-sm font-medium text-red-900 dark:text-red-400">Total Debt Owed</h3>
+                <p className="mt-2 text-2xl font-semibold text-red-900 dark:text-red-400">
+                  {formatCurrency(totalOwed)}
+                </p>
+              </div>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <p className="text-lg font-semibold text-green-900">
-                Total to Collect: {formatCurrency(totalToCollect)}
-              </p>
+            
+            <div className="card bg-green-50 dark:bg-green-900/10">
+              <div className="p-4">
+                <h3 className="text-sm font-medium text-green-900 dark:text-green-400">Total to Collect</h3>
+                <p className="mt-2 text-2xl font-semibold text-green-900 dark:text-green-400">
+                  {formatCurrency(totalToCollect)}
+                </p>
+              </div>
+            </div>
+
+            <div className={`card ${
+              netBalance >= 0 
+                ? 'bg-blue-50 dark:bg-blue-900/10' 
+                : 'bg-orange-50 dark:bg-orange-900/10'
+            }`}>
+              <div className="p-4">
+                <h3 className={`text-sm font-medium ${
+                  netBalance >= 0 
+                    ? 'text-blue-900 dark:text-blue-400' 
+                    : 'text-orange-900 dark:text-orange-400'
+                }`}>
+                  Net Balance
+                </h3>
+                <p className={`mt-2 text-2xl font-semibold ${
+                  netBalance >= 0 
+                    ? 'text-blue-900 dark:text-blue-400' 
+                    : 'text-orange-900 dark:text-orange-400'
+                }`}>
+                  {formatCurrency(netBalance)}
+                </p>
+              </div>
             </div>
           </div>
 
-          {debtsOwed.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Debts Owed</h2>
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Creditor
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Item
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Quantity
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Price/Item
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {debtsOwed.map((debt) => (
-                      <tr key={debt.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(debt.date).toLocaleDateString('vi-VN')}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {debt.creditor.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {debt.menuItem.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {debt.quantity}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                          {formatCurrency(debt.menuItem.price)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                          {formatCurrency(debt.totalPrice)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                          <button
-                            onClick={() => handleDeleteDebt(debt.id)}
-                            className="text-red-600 hover:text-red-900 font-medium"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          <div className="card">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Debts Owed</h2>
+              <DebtTable debts={debtsOwed} type="owed" />
             </div>
-          )}
+          </div>
 
-          {debtsToCollect.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Debts to Collect</h2>
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Debtor
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Item
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Quantity
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Price/Item
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {debtsToCollect.map((debt) => (
-                      <tr key={debt.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(debt.date).toLocaleDateString('vi-VN')}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {debt.debtor.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {debt.menuItem.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {debt.quantity}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                          {formatCurrency(debt.menuItem.price)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                          {formatCurrency(debt.totalPrice)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                          <button
-                            onClick={() => handleDeleteDebt(debt.id)}
-                            className="text-red-600 hover:text-red-900 font-medium"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          <div className="card">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Debts to Collect</h2>
+              <DebtTable debts={debtsToCollect} type="collect" />
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>

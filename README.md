@@ -11,6 +11,37 @@ A web application for managing shared expenses and debts within a group. Built w
 - 📊 Group Overview: View total debts for the entire group
 - 👤 Individual View: Check detailed debts for each person
 
+## UI/UX Features
+
+### Navigation & Layout
+- 📱 Responsive mobile menu with smooth transitions
+- 🎯 Active state indicators for current page
+- 📐 Consistent spacing and visual hierarchy
+- 🌗 Dark mode support for better visibility
+
+### Components & Interactions
+- 🎨 Modern card-based layouts for better content organization
+- 📝 Enhanced form designs with real-time validation feedback
+- 📊 Responsive tables with improved data presentation
+- ⚡ Loading skeletons for better user experience
+- 🎭 Smooth transitions and hover effects
+
+### Data Visualization
+- 📈 Enhanced statistics cards with clear visual hierarchy
+- 🎨 Color-coded indicators for financial data:
+  - Green for positive balances and credits
+  - Red for debts and negative balances
+  - Blue for neutral information
+- 📱 Mobile-optimized tables with horizontal scrolling
+
+### User Experience Improvements
+- ⏳ Loading states with skeleton animations
+- ❌ Enhanced error handling with clear messages
+- ✨ Immediate feedback for user actions
+- 📱 Mobile-first responsive design
+- 🔍 Better data organization and filtering
+- 🎨 Consistent color scheme and typography
+
 ## Prerequisites
 
 - Node.js (v16 or higher)

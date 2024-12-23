@@ -98,26 +98,54 @@ export default function Home() {
       title: 'Add New Debt',
       description: 'Record new debts for group members',
       href: '/debts/new',
-      color: 'bg-purple-500',
+      icon: (
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      ),
     },
     {
       title: 'Group Overview',
       description: 'View total debts for the entire group',
       href: '/debts/group',
-      color: 'bg-orange-500',
+      icon: (
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
     },
     {
       title: 'Individual Debts',
       description: 'Check detailed debts for each person',
       href: '/debts/individual',
-      color: 'bg-red-500',
+      icon: (
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      ),
     },
   ];
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl text-gray-600">Loading...</div>
+      <div className="py-8 animate-fade-in">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="h-12 w-64 skeleton mx-auto mb-4"></div>
+            <div className="h-6 w-96 skeleton mx-auto"></div>
+          </div>
+          <div className="grid gap-6 mb-12 grid-cols-1 md:grid-cols-3">
+            <div className="h-32 skeleton"></div>
+            <div className="h-32 skeleton"></div>
+            <div className="h-32 skeleton"></div>
+          </div>
+          <div className="h-96 skeleton mb-12"></div>
+          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="h-48 skeleton"></div>
+            <div className="h-48 skeleton"></div>
+            <div className="h-48 skeleton"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -131,124 +159,116 @@ export default function Home() {
   , userStats[0]);
 
   return (
-    <div className="py-8">
+    <div className="py-8 animate-fade-in">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+          <h1 className="text-4xl font-bold sm:text-5xl mb-4">
             Group Debt Manager
           </h1>
-          <p className="mt-4 text-xl text-gray-600">
+          <p className="text-xl text-muted-foreground">
             Track and manage shared expenses within your group
           </p>
         </div>
 
         {/* Statistics Cards */}
         <div className="grid gap-6 mb-12 grid-cols-1 md:grid-cols-3">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Monthly Total Debts</h3>
-            <p className="text-3xl font-bold text-blue-600">{formatCurrency(monthlyTotal)}</p>
-            <p className="text-sm text-gray-500 mt-1">Total debts for current month</p>
+          <div className="card bg-primary/5 border-primary/20">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-primary mb-2">Monthly Total Debts</h3>
+              <p className="text-3xl font-bold text-primary">{formatCurrency(monthlyTotal)}</p>
+              <p className="text-sm text-primary/70 mt-1">Total debts for current month</p>
+            </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Top Debtor</h3>
-            <p className="text-3xl font-bold text-red-600">{topDebtor?.userName}</p>
-            <p className="text-sm text-gray-500 mt-1">
-              Owes {formatCurrency(topDebtor?.totalOwing || 0)}
-            </p>
+          <div className="card bg-red-50 dark:bg-red-900/10">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Top Debtor</h3>
+              <p className="text-3xl font-bold text-red-900 dark:text-red-400">{topDebtor?.userName}</p>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                Owes {formatCurrency(topDebtor?.totalOwing || 0)}
+              </p>
+            </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Top Creditor</h3>
-            <p className="text-3xl font-bold text-green-600">{topCreditor?.userName}</p>
-            <p className="text-sm text-gray-500 mt-1">
-              Owed {formatCurrency(topCreditor?.totalOwed || 0)}
-            </p>
+          <div className="card bg-green-50 dark:bg-green-900/10">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-green-900 dark:text-green-400 mb-2">Top Creditor</h3>
+              <p className="text-3xl font-bold text-green-900 dark:text-green-400">{topCreditor?.userName}</p>
+              <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                Owed {formatCurrency(topCreditor?.totalOwed || 0)}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* User Statistics Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-12 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">User Statistics</h3>
+        <div className="card mb-12">
+          <div className="p-6 border-b border-border">
+            <h3 className="text-lg font-semibold">User Statistics</h3>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="table-container">
+            <table className="table">
+              <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Owed (Lending)
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Owing (Borrowing)
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Net Balance
-                  </th>
+                  <th>User</th>
+                  <th className="text-right">Total Owed (Lending)</th>
+                  <th className="text-right">Total Owing (Borrowing)</th>
+                  <th className="text-right">Net Balance</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {userStats.map((stat) => (
-                  <tr key={stat.userId}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {stat.userName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">
-                      {formatCurrency(stat.totalOwed)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">
-                      {formatCurrency(stat.totalOwing)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={stat.totalOwed - stat.totalOwing >= 0 ? 'text-green-600' : 'text-red-600'}>
-                        {formatCurrency(stat.totalOwed - stat.totalOwing)}
-                      </span>
+              <tbody>
+                {userStats.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-8 text-muted-foreground">
+                      No user statistics available.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  userStats.map((stat) => (
+                    <tr key={stat.userId}>
+                      <td className="font-medium">{stat.userName}</td>
+                      <td className="text-right text-green-600 dark:text-green-400">
+                        {formatCurrency(stat.totalOwed)}
+                      </td>
+                      <td className="text-right text-red-600 dark:text-red-400">
+                        {formatCurrency(stat.totalOwing)}
+                      </td>
+                      <td className="text-right font-medium">
+                        <span className={
+                          stat.totalOwed - stat.totalOwing >= 0 
+                            ? 'text-green-600 dark:text-green-400' 
+                            : 'text-red-600 dark:text-red-400'
+                        }>
+                          {formatCurrency(stat.totalOwed - stat.totalOwing)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
             <Link
               key={feature.href}
               href={feature.href}
-              className="relative group rounded-lg border border-gray-200 p-6 hover:border-gray-300 transition-all duration-200 hover:shadow-lg bg-white"
+              className="card group hover:shadow-lg transition-all duration-200"
             >
-              <div>
-                <div className={`inline-flex p-3 ${feature.color} rounded-lg text-white mb-4`}>
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
+              <div className="p-6">
+                <div className="inline-flex p-3 bg-primary/10 text-primary rounded-lg mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  {feature.icon}
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 group-hover:text-gray-600">
+                <h3 className="text-lg font-medium mb-2 group-hover:text-primary transition-colors">
                   {feature.title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {feature.description}
                 </p>
               </div>
-              <span
-                className="absolute inset-0 rounded-lg"
-                aria-hidden="true"
-              />
             </Link>
           ))}
         </div>

@@ -3,11 +3,18 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Navigation from './components/Navigation'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: 'Debt Manager',
   description: 'Manage group debts easily',
+  viewport: 'width=device-width, initial-scale=1',
+  icons: {
+    icon: '/vercel.svg',
+  },
 }
 
 export default function RootLayout({
@@ -16,12 +23,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gray-50 min-h-screen`}>
+    <html lang="en" className={inter.variable}>
+      <body className={`${inter.className} antialiased bg-background text-foreground min-h-screen flex flex-col`}>
         <Navigation />
-        <main className="max-w-7xl mx-auto px-4 py-6">
-          {children}
+        <main className="flex-1 container mx-auto px-4 py-8 sm:px-6 lg:px-8 animate-fade-in">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
+        <footer className="border-t border-[--border]">
+          <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
+            <p>Group Debt Manager - Manage shared expenses easily</p>
+          </div>
+        </footer>
       </body>
     </html>
   )
