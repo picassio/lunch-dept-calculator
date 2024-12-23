@@ -14,26 +14,38 @@ const menuItemSchema = z.object({
   category: z.enum(['food', 'drink'], {
     required_error: 'Category is required',
   }),
+  restaurantId: z.string().min(1, 'Restaurant is required'),
 });
 
 type MenuItemFormData = z.infer<typeof menuItemSchema>;
+type Category = 'food' | 'drink';
+
+interface Restaurant {
+  id: number;
+  name: string;
+}
 
 interface MenuItem {
   id: number;
   name: string;
   price: number;
-  category: string;
+  category: Category;
+  restaurantId: number;
+  restaurant: Restaurant;
 }
 
 export default function MenuItemsPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemSchema),
@@ -43,12 +55,24 @@ export default function MenuItemsPage() {
     fetchMenuItems();
   }, []);
 
+  useEffect(() => {
+    if (editingItem) {
+      setValue('name', editingItem.name);
+      setValue('price', editingItem.price.toString());
+      setValue('category', editingItem.category as Category);
+      setValue('restaurantId', editingItem.restaurantId.toString());
+    } else {
+      reset();
+    }
+  }, [editingItem, setValue, reset]);
+
   const fetchMenuItems = async () => {
     try {
       const response = await fetch('/api/menu-items');
       if (!response.ok) throw new Error('Failed to fetch menu items');
       const data = await response.json();
-      setMenuItems(data);
+      setMenuItems(data.menuItems);
+      setRestaurants(data.restaurants);
     } catch {
       setError('Failed to load menu items');
     } finally {
@@ -58,23 +82,59 @@ export default function MenuItemsPage() {
 
   const onSubmit = async (data: MenuItemFormData) => {
     try {
-      const response = await fetch('/api/menu-items', {
-        method: 'POST',
+      const url = '/api/menu-items';
+      const method = editingItem ? 'PUT' : 'POST';
+      const body = editingItem ? { ...data, id: editingItem.id } : data;
+
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create menu item');
+        throw new Error(errorData.error || `Failed to ${editingItem ? 'update' : 'create'} menu item`);
       }
 
+      setEditingItem(null);
       reset();
       fetchMenuItems();
     } catch (error) {
       const err = error as Error;
       setError(err.message);
     }
+  };
+
+  const handleEdit = (item: MenuItem) => {
+    setEditingItem(item);
+    setError('');
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this menu item?')) return;
+
+    try {
+      const response = await fetch(`/api/menu-items?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete menu item');
+      }
+
+      fetchMenuItems();
+    } catch (error) {
+      const err = error as Error;
+      setError(err.message);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingItem(null);
+    reset();
+    setError('');
   };
 
   if (loading) return <div>Loading...</div>;
@@ -131,12 +191,43 @@ export default function MenuItemsPage() {
             )}
           </div>
 
-          <button
-            type="submit"
-            className="w-full inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-          >
-            Add Menu Item
-          </button>
+          <div>
+            <label htmlFor="restaurantId" className="block text-sm font-medium text-gray-600">
+              Restaurant
+            </label>
+            <select
+              {...register('restaurantId')}
+              className="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            >
+              <option value="">Select restaurant</option>
+              {restaurants.map((restaurant) => (
+                <option key={restaurant.id} value={restaurant.id}>
+                  {restaurant.name}
+                </option>
+              ))}
+            </select>
+            {errors.restaurantId && (
+              <p className="mt-1 text-sm text-red-500">{errors.restaurantId.message}</p>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              {editingItem ? 'Update Menu Item' : 'Add Menu Item'}
+            </button>
+            {editingItem && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
 
         {error && (
@@ -159,6 +250,12 @@ export default function MenuItemsPage() {
                   <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                     Category
                   </th>
+                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Restaurant
+                  </th>
+                  <th className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
@@ -172,6 +269,23 @@ export default function MenuItemsPage() {
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       {item.category}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {item.restaurant.name}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-right">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="text-blue-600 hover:text-blue-900 mr-4"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}

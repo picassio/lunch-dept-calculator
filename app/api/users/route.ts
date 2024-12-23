@@ -47,3 +47,74 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, name, email } = body;
+
+    if (!id || !name || !email) {
+      return NextResponse.json(
+        { error: 'ID, name and email are required' },
+        { status: 400 }
+      );
+    }
+
+    const user = await prisma.user.update({
+      where: { id },
+      data: { name, email }
+    });
+
+    return NextResponse.json(user);
+  } catch (error) {
+    const prismaError = error as PrismaClientKnownRequestError;
+    if (prismaError.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Email already exists' },
+        { status: 400 }
+      );
+    }
+    if (prismaError.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json(
+      { error: 'Failed to update user' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
+    await prisma.user.delete({
+      where: { id: parseInt(id) }
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const prismaError = error as PrismaClientKnownRequestError;
+    if (prismaError.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json(
+      { error: 'Failed to delete user' },
+      { status: 500 }
+    );
+  }
+}

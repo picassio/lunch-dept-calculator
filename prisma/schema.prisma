@@ -17,14 +17,26 @@ model User {
   updatedAt     DateTime @updatedAt
 }
 
-model MenuItem {
-  id        Int      @id @default(autoincrement())
+model Restaurant {
+  id        Int        @id @default(autoincrement())
   name      String
-  price     Float
-  category  String   // food or drink
-  debts     Debt[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  menuItems MenuItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model MenuItem {
+  id           Int        @id @default(autoincrement())
+  name         String
+  price        Float
+  category     String     // food or drink
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  debts        Debt[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([restaurantId])
 }
 
 model Debt {

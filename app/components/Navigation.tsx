@@ -8,6 +8,7 @@ const Navigation = () => {
 
   const links = [
     { href: '/users', label: 'Users' },
+    { href: '/restaurants', label: 'Restaurants' },
     { href: '/menu-items', label: 'Menu Items' },
     { href: '/debts/new', label: 'Add Debt' },
     { href: '/debts/group', label: 'Group Debts' },
