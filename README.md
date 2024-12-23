@@ -32,10 +32,10 @@ npm install
 3. Set up environment variables:
 ```bash
 # Copy the example .env file
-cp .env.example .env
+cp env.example .env
 
 # Update the following variables in .env:
-DATABASE_URL="mysql://debtuser:debtpassword@localhost:3306/debt_manager"
+DATABASE_URL="mysql://root:rootpassword@localhost:3306/debt_manager"
 NEXT_PUBLIC_API_URL="http://localhost:3000/api"
 ```
 
