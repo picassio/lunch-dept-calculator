@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { formatCurrency } from '@/app/lib/formatCurrency';
+import { formatCurrency } from '../../lib/formatCurrency';
 
 const debtSchema = z.object({
   debtorId: z.string().min(1, 'Debtor is required'),
   creditorId: z.string().min(1, 'Creditor is required'),
+  restaurantId: z.string().min(1, 'Restaurant is required'),
   menuItemId: z.string().min(1, 'Menu item is required'),
   quantity: z.string().refine((val) => !isNaN(parseInt(val)) && parseInt(val) > 0, {
     message: 'Quantity must be a positive number',
@@ -25,16 +26,24 @@ interface User {
   name: string;
 }
 
+interface Restaurant {
+  id: number;
+  name: string;
+}
+
 interface MenuItem {
   id: number;
   name: string;
   price: number;
   category: string;
+  restaurantId: number;
 }
 
 export default function NewDebtPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null);
@@ -52,15 +61,18 @@ export default function NewDebtPage() {
 
   const quantity = watch('quantity');
   const menuItemId = watch('menuItemId');
+  const restaurantId = watch('restaurantId');
 
   useEffect(() => {
     Promise.all([
       fetch('/api/users').then(res => res.json()),
+      fetch('/api/restaurants').then(res => res.json()),
       fetch('/api/menu-items').then(res => res.json())
     ])
-      .then(([usersData, menuItemsData]) => {
+      .then(([usersData, restaurantsData, menuItemsData]) => {
         setUsers(usersData);
-        setMenuItems(menuItemsData);
+        setRestaurants(restaurantsData);
+        setMenuItems(menuItemsData.menuItems);
         setLoading(false);
       })
       .catch(() => {
@@ -68,6 +80,15 @@ export default function NewDebtPage() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (restaurantId) {
+      const filtered = menuItems.filter(item => item.restaurantId === parseInt(restaurantId));
+      setFilteredMenuItems(filtered);
+    } else {
+      setFilteredMenuItems([]);
+    }
+  }, [restaurantId, menuItems]);
 
   useEffect(() => {
     if (menuItemId && quantity) {
@@ -156,15 +177,36 @@ export default function NewDebtPage() {
         </div>
 
         <div>
+          <label htmlFor="restaurantId" className="block text-sm font-medium text-gray-600">
+            Restaurant
+          </label>
+          <select
+            {...register('restaurantId')}
+            className="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          >
+            <option value="">Select restaurant</option>
+            {restaurants.map((restaurant) => (
+              <option key={restaurant.id} value={restaurant.id}>
+                {restaurant.name}
+              </option>
+            ))}
+          </select>
+          {errors.restaurantId && (
+            <p className="mt-1 text-sm text-red-500">{errors.restaurantId.message}</p>
+          )}
+        </div>
+
+        <div>
           <label htmlFor="menuItemId" className="block text-sm font-medium text-gray-600">
             Menu Item
           </label>
           <select
             {...register('menuItemId')}
             className="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            disabled={!restaurantId}
           >
             <option value="">Select menu item</option>
-            {menuItems.map((item) => (
+            {filteredMenuItems.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.name} - {formatCurrency(item.price)}
               </option>
@@ -172,6 +214,9 @@ export default function NewDebtPage() {
           </select>
           {errors.menuItemId && (
             <p className="mt-1 text-sm text-red-500">{errors.menuItemId.message}</p>
+          )}
+          {!restaurantId && (
+            <p className="mt-1 text-sm text-gray-500">Please select a restaurant first</p>
           )}
         </div>
 
