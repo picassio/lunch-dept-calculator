@@ -58,7 +58,7 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json(restaurant);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to update restaurant' },
       { status: 500 }
@@ -83,7 +83,7 @@ export async function DELETE(request: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to delete restaurant. Make sure it has no menu items.' },
       { status: 500 }

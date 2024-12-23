@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { formatCurrency } from './lib/formatCurrency';
 
+interface Debt {
+  date: string;
+  totalPrice: number;
+}
+
 interface DebtSummary {
   debtor: { id: number; name: string };
   creditor: { id: number; name: string };
@@ -19,7 +24,6 @@ interface UserDebtStats {
 
 export default function Home() {
   const [monthlyTotal, setMonthlyTotal] = useState(0);
-  const [debtSummaries, setDebtSummaries] = useState<DebtSummary[]>([]);
   const [userStats, setUserStats] = useState<UserDebtStats[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,26 +31,25 @@ export default function Home() {
     const fetchData = async () => {
       try {
         // Fetch debt summaries
+        // Fetch debt summaries and calculate user statistics
         const summariesRes = await fetch('/api/debts', {
           method: 'PUT'
         });
         const summariesData = await summariesRes.json();
-        setDebtSummaries(summariesData);
 
-        // Calculate monthly total and user statistics
         const debtsRes = await fetch('/api/debts');
         const debtsData = await debtsRes.json();
         
         // Filter debts for current month
         const now = new Date();
-        const currentMonthDebts = debtsData.filter((debt: any) => {
+        const currentMonthDebts = debtsData.filter((debt: Debt) => {
           const debtDate = new Date(debt.date);
           return debtDate.getMonth() === now.getMonth() && 
                  debtDate.getFullYear() === now.getFullYear();
         });
 
         // Calculate monthly total
-        const monthTotal = currentMonthDebts.reduce((acc: number, debt: any) => 
+        const monthTotal = currentMonthDebts.reduce((acc: number, debt: Debt) =>
           acc + debt.totalPrice, 0
         );
         setMonthlyTotal(monthTotal);

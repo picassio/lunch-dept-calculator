@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(menuItem, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to create menu item' },
       { status: 500 }
@@ -83,7 +83,7 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json(menuItem);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to update menu item' },
       { status: 500 }
@@ -108,7 +108,7 @@ export async function DELETE(request: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to delete menu item' },
       { status: 500 }
