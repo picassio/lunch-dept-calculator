@@ -10,11 +10,11 @@ const Navigation = () => {
 
   const links = [
     { href: '/users', label: 'Người Dùng' },
-    { href: '/restaurants', label: 'Nhà Hàng' },
+    { href: '/restaurants', label: 'Cửa Hàng' },
     { href: '/menu-items', label: 'Thực Đơn' },
     { href: '/debts/new', label: 'Thêm Nợ' },
-    { href: '/debts/group', label: 'Nợ Nhóm' },
-    { href: '/debts/individual', label: 'Nợ Cá Nhân' },
+    { href: '/debts/group', label: 'Quản Lý Nợ Nhóm' },
+    { href: '/debts/individual', label: 'Quản Lý Nợ Cá Nhân' },
   ];
 
   return (
