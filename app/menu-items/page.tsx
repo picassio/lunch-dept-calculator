@@ -245,7 +245,7 @@ export default function MenuItemsPage() {
                     Processing...
                   </span>
                 ) : (
-                  editingItem ? 'Update Menu Item' : 'Add Menu Item'
+                  editingItem ? 'Update Menu Item' : 'Thêm món'
                 )}
               </button>
               {editingItem && (

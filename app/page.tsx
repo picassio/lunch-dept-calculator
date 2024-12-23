@@ -185,7 +185,7 @@ export default function Home() {
 
           <div className="card bg-red-50 dark:bg-red-900/10">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Con Nợ Nhiều Nhất</h3>
+              <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Top Con Nợ</h3>
               <p className="text-3xl font-bold text-red-900 dark:text-red-400">{topDebtor?.userName}</p>
               <p className="text-sm text-red-700 dark:text-red-300 mt-1">
                 Nợ {formatCurrency(topDebtor?.totalOwing || 0)}
@@ -195,7 +195,7 @@ export default function Home() {
 
           <div className="card bg-green-50 dark:bg-green-900/10">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-green-900 dark:text-green-400 mb-2">Chủ Nợ Nhiều Nhất</h3>
+              <h3 className="text-lg font-semibold text-green-900 dark:text-green-400 mb-2">Top Chủ Nợ</h3>
               <p className="text-3xl font-bold text-green-900 dark:text-green-400">{topCreditor?.userName}</p>
               <p className="text-sm text-green-700 dark:text-green-300 mt-1">
                 Được nợ {formatCurrency(topCreditor?.totalOwed || 0)}
