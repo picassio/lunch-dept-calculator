@@ -9,12 +9,12 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const links = [
-    { href: '/users', label: 'Users' },
-    { href: '/restaurants', label: 'Restaurants' },
-    { href: '/menu-items', label: 'Menu Items' },
-    { href: '/debts/new', label: 'Add Debt' },
-    { href: '/debts/group', label: 'Group Debts' },
-    { href: '/debts/individual', label: 'Individual Debts' },
+    { href: '/users', label: 'Người Dùng' },
+    { href: '/restaurants', label: 'Nhà Hàng' },
+    { href: '/menu-items', label: 'Thực Đơn' },
+    { href: '/debts/new', label: 'Thêm Nợ' },
+    { href: '/debts/group', label: 'Nợ Nhóm' },
+    { href: '/debts/individual', label: 'Nợ Cá Nhân' },
   ];
 
   return (
@@ -25,7 +25,7 @@ const Navigation = () => {
             href="/" 
             className="text-xl font-semibold text-primary hover:text-primary/90 transition-colors"
           >
-            Debt Manager
+            Quản Lý Nợ
           </Link>
 
           {/* Mobile menu button */}

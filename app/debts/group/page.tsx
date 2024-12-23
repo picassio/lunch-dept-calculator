@@ -67,7 +67,7 @@ export default function GroupDebtsPage() {
   }, []);
 
   const handleDeleteDebt = async (debtId: number) => {
-    if (!confirm('Are you sure you want to delete this debt?')) {
+    if (!confirm('Bạn có chắc chắn muốn xóa khoản nợ này không?')) {
       return;
     }
 
@@ -78,12 +78,12 @@ export default function GroupDebtsPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete debt');
+        throw new Error('Không thể xóa khoản nợ');
       }
 
       fetchData();
     } catch {
-      setError('Failed to delete debt');
+      setError('Không thể xóa khoản nợ');
     } finally {
       setDeleteLoading(null);
     }
@@ -112,29 +112,29 @@ export default function GroupDebtsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="card">
         <div className="p-6">
-          <h1 className="text-2xl font-semibold mb-6">Group Debts Overview</h1>
+          <h1 className="text-2xl font-semibold mb-6">Tổng Quan Nợ Nhóm</h1>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="card bg-primary/5 border-primary/20">
               <div className="p-4">
-                <h3 className="text-sm font-medium text-primary">Total Group Debt</h3>
+                <h3 className="text-sm font-medium text-primary">Tổng Nợ Nhóm</h3>
                 <p className="mt-2 text-2xl font-semibold text-primary">
                   {formatCurrency(totalGroupDebt)}
                 </p>
                 <p className="mt-1 text-sm text-primary/70">
-                  Total amount owed across all members
+                  Tổng số tiền nợ của tất cả thành viên
                 </p>
               </div>
             </div>
 
             <div className="card bg-muted">
               <div className="p-4">
-                <h3 className="text-sm font-medium">Active Debts</h3>
+                <h3 className="text-sm font-medium">Khoản Nợ Đang Hoạt Động</h3>
                 <p className="mt-2 text-2xl font-semibold">
                   {summaries.length}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Number of active debt relationships
+                  Số lượng mối quan hệ nợ đang hoạt động
                 </p>
               </div>
             </div>
@@ -144,21 +144,21 @@ export default function GroupDebtsPage() {
 
       <div className="card">
         <div className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Debt Summary</h2>
+          <h2 className="text-xl font-semibold mb-4">Tổng Kết Nợ</h2>
           <div className="table-container">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Debtor</th>
-                  <th>Creditor</th>
-                  <th className="text-right">Amount</th>
+                  <th>Con Nợ</th>
+                  <th>Chủ Nợ</th>
+                  <th className="text-right">Số Tiền</th>
                 </tr>
               </thead>
               <tbody>
                 {summaries.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="text-center py-8 text-muted-foreground">
-                      No active debts found.
+                      Không tìm thấy khoản nợ nào.
                     </td>
                   </tr>
                 ) : (
@@ -180,26 +180,26 @@ export default function GroupDebtsPage() {
 
       <div className="card">
         <div className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
+          <h2 className="text-xl font-semibold mb-4">Giao Dịch Gần Đây</h2>
           <div className="table-container">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Debtor</th>
-                  <th>Creditor</th>
-                  <th>Item</th>
-                  <th className="text-center">Qty</th>
-                  <th className="text-right">Price/Item</th>
-                  <th className="text-right">Total</th>
-                  <th className="text-right">Actions</th>
+                  <th>Ngày</th>
+                  <th>Con Nợ</th>
+                  <th>Chủ Nợ</th>
+                  <th>Món Ăn</th>
+                  <th className="text-center">SL</th>
+                  <th className="text-right">Giá/Món</th>
+                  <th className="text-right">Tổng</th>
+                  <th className="text-right">Thao Tác</th>
                 </tr>
               </thead>
               <tbody>
                 {details.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="text-center py-8 text-muted-foreground">
-                      No transactions found.
+                      Không tìm thấy giao dịch nào.
                     </td>
                   </tr>
                 ) : (
@@ -228,10 +228,10 @@ export default function GroupDebtsPage() {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                               </svg>
-                              Deleting...
+                              Đang xóa...
                             </span>
                           ) : (
-                            'Delete'
+                            'Xóa'
                           )}
                         </button>
                       </td>

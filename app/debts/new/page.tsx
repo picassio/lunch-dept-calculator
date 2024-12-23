@@ -7,15 +7,15 @@ import { z } from 'zod';
 import { formatCurrency } from '../../lib/formatCurrency';
 
 const debtSchema = z.object({
-  debtorId: z.string().min(1, 'Debtor is required'),
-  creditorId: z.string().min(1, 'Creditor is required'),
-  restaurantId: z.string().min(1, 'Restaurant is required'),
-  menuItemId: z.string().min(1, 'Menu item is required'),
+  debtorId: z.string().min(1, 'Vui lòng chọn Con Nợ'),
+  creditorId: z.string().min(1, 'Vui lòng chọn Chủ Nợ'),
+  restaurantId: z.string().min(1, 'Vui lòng chọn nhà hàng'),
+  menuItemId: z.string().min(1, 'Vui lòng chọn món ăn'),
   quantity: z.string().refine((val) => !isNaN(parseInt(val)) && parseInt(val) > 0, {
-    message: 'Quantity must be a positive number',
+    message: 'Số lượng phải là số dương',
   }),
 }).refine((data) => data.debtorId !== data.creditorId, {
-  message: "Debtor and creditor can't be the same person",
+  message: "Con Nợ và Chủ Nợ không thể là cùng một người",
   path: ['creditorId'],
 });
 
@@ -149,19 +149,19 @@ export default function NewDebtPage() {
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
       <div className="card">
         <div className="p-6">
-          <h1 className="text-2xl font-semibold mb-6">Add New Debt</h1>
+          <h1 className="text-2xl font-semibold mb-6">Thêm Khoản Nợ Mới</h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="debtorId" className="block text-sm font-medium mb-1">
-                  Who owes the money? (Debtor)
+                  Ai là người nợ? (Con Nợ)
                 </label>
                 <select
                   {...register('debtorId')}
                   className="input"
                 >
-                  <option value="">Select debtor</option>
+                  <option value="">Chọn Con Nợ</option>
                   {users.map((user) => (
                     <option key={user.id} value={user.id}>
                       {user.name}
@@ -175,13 +175,13 @@ export default function NewDebtPage() {
 
               <div>
                 <label htmlFor="creditorId" className="block text-sm font-medium mb-1">
-                  Who paid? (Creditor)
+                  Ai là người cho vay? (Chủ Nợ)
                 </label>
                 <select
                   {...register('creditorId')}
                   className="input"
                 >
-                  <option value="">Select creditor</option>
+                  <option value="">Chọn Chủ Nợ</option>
                   {users.map((user) => (
                     <option key={user.id} value={user.id}>
                       {user.name}
@@ -197,13 +197,13 @@ export default function NewDebtPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="restaurantId" className="block text-sm font-medium mb-1">
-                  Restaurant
+                  Nhà Hàng
                 </label>
                 <select
                   {...register('restaurantId')}
                   className="input"
                 >
-                  <option value="">Select restaurant</option>
+                  <option value="">Chọn nhà hàng</option>
                   {restaurants.map((restaurant) => (
                     <option key={restaurant.id} value={restaurant.id}>
                       {restaurant.name}
@@ -217,14 +217,14 @@ export default function NewDebtPage() {
 
               <div>
                 <label htmlFor="menuItemId" className="block text-sm font-medium mb-1">
-                  Menu Item
+                  Món Ăn
                 </label>
                 <select
                   {...register('menuItemId')}
                   className="input"
                   disabled={!restaurantId}
                 >
-                  <option value="">Select menu item</option>
+                  <option value="">Chọn món ăn</option>
                   {filteredMenuItems.map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.name} - {formatCurrency(item.price)}
@@ -235,21 +235,21 @@ export default function NewDebtPage() {
                   <p className="mt-1 text-sm text-red-500">{errors.menuItemId.message}</p>
                 )}
                 {!restaurantId && (
-                  <p className="mt-1 text-sm text-muted-foreground">Please select a restaurant first</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Vui lòng chọn nhà hàng trước</p>
                 )}
               </div>
             </div>
 
             <div>
               <label htmlFor="quantity" className="block text-sm font-medium mb-1">
-                Quantity
+                Số Lượng
               </label>
               <input
                 {...register('quantity')}
                 type="number"
                 min="1"
                 className="input w-32"
-                placeholder="Enter quantity"
+                placeholder="Nhập số lượng"
               />
               {errors.quantity && (
                 <p className="mt-1 text-sm text-red-500">{errors.quantity.message}</p>
@@ -259,11 +259,11 @@ export default function NewDebtPage() {
             {calculatedTotal > 0 && (
               <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                 <p className="text-lg font-medium text-primary">
-                  Total: {formatCurrency(calculatedTotal)}
+                  Tổng cộng: {formatCurrency(calculatedTotal)}
                 </p>
                 {selectedMenuItem && (
                   <p className="text-sm text-primary/80 mt-1">
-                    {selectedMenuItem.name} x {quantity} @ {formatCurrency(selectedMenuItem.price)} each
+                    {selectedMenuItem.name} x {quantity} @ {formatCurrency(selectedMenuItem.price)} mỗi món
                   </p>
                 )}
               </div>
@@ -286,10 +286,10 @@ export default function NewDebtPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                   </svg>
-                  Processing...
+                  Đang xử lý...
                 </span>
               ) : (
-                'Add Debt'
+                'Thêm Khoản Nợ'
               )}
             </button>
           </form>

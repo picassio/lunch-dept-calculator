@@ -45,7 +45,7 @@ export default function IndividualDebtsPage() {
         setLoading(false);
       })
       .catch(() => {
-        setError('Failed to load users');
+        setError('Không thể tải danh sách người dùng');
         setLoading(false);
       });
   }, []);
@@ -60,7 +60,7 @@ export default function IndividualDebtsPage() {
       setDebtsOwed(owed);
       setDebtsToCollect(toCollect);
     } catch {
-      setError('Failed to load debt data');
+      setError('Không thể tải dữ liệu nợ');
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,7 @@ export default function IndividualDebtsPage() {
   }, [selectedUser, fetchDebts]);
 
   const handleDeleteDebt = async (debtId: number) => {
-    if (!confirm('Are you sure you want to delete this debt?')) {
+    if (!confirm('Bạn có chắc chắn muốn xóa khoản nợ này không?')) {
       return;
     }
 
@@ -84,12 +84,12 @@ export default function IndividualDebtsPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete debt');
+        throw new Error('Không thể xóa khoản nợ');
       }
 
       fetchDebts();
     } catch {
-      setError('Failed to delete debt');
+      setError('Không thể xóa khoản nợ');
     } finally {
       setDeleteLoading(null);
     }
@@ -117,13 +117,13 @@ export default function IndividualDebtsPage() {
       <table className="table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>{type === 'owed' ? 'Creditor' : 'Debtor'}</th>
-            <th>Item</th>
-            <th className="text-center">Qty</th>
-            <th className="text-right">Price/Item</th>
-            <th className="text-right">Total</th>
-            <th className="text-right">Actions</th>
+            <th>Ngày</th>
+            <th>{type === 'owed' ? 'Chủ Nợ' : 'Con Nợ'}</th>
+            <th>Món Ăn</th>
+            <th className="text-center">SL</th>
+            <th className="text-right">Giá/Món</th>
+            <th className="text-right">Tổng</th>
+            <th className="text-right">Thao Tác</th>
           </tr>
         </thead>
         <tbody>
@@ -151,10 +151,10 @@ export default function IndividualDebtsPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                       </svg>
-                      Deleting...
+                      Đang xóa...
                     </span>
                   ) : (
-                    'Delete'
+                    'Xóa'
                   )}
                 </button>
               </td>
@@ -163,7 +163,7 @@ export default function IndividualDebtsPage() {
           {debts.length === 0 && (
             <tr>
               <td colSpan={7} className="text-center py-8 text-muted-foreground">
-                No debts found.
+                Không tìm thấy khoản nợ nào.
               </td>
             </tr>
           )}
@@ -176,11 +176,11 @@ export default function IndividualDebtsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="card">
         <div className="p-6">
-          <h1 className="text-2xl font-semibold mb-6">Individual Debts</h1>
+          <h1 className="text-2xl font-semibold mb-6">Nợ Cá Nhân</h1>
 
           <div className="max-w-md">
             <label htmlFor="user" className="block text-sm font-medium mb-1">
-              Select User
+              Chọn Người Dùng
             </label>
             <select
               id="user"
@@ -188,7 +188,7 @@ export default function IndividualDebtsPage() {
               onChange={(e) => setSelectedUser(Number(e.target.value))}
               value={selectedUser || ''}
             >
-              <option value="">Select a user</option>
+              <option value="">Chọn người dùng</option>
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
                   {user.name}
@@ -210,7 +210,7 @@ export default function IndividualDebtsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="card bg-red-50 dark:bg-red-900/10">
               <div className="p-4">
-                <h3 className="text-sm font-medium text-red-900 dark:text-red-400">Total Debt Owed</h3>
+                <h3 className="text-sm font-medium text-red-900 dark:text-red-400">Tổng Nợ Phải Trả</h3>
                 <p className="mt-2 text-2xl font-semibold text-red-900 dark:text-red-400">
                   {formatCurrency(totalOwed)}
                 </p>
@@ -219,7 +219,7 @@ export default function IndividualDebtsPage() {
             
             <div className="card bg-green-50 dark:bg-green-900/10">
               <div className="p-4">
-                <h3 className="text-sm font-medium text-green-900 dark:text-green-400">Total to Collect</h3>
+                <h3 className="text-sm font-medium text-green-900 dark:text-green-400">Tổng Nợ Phải Thu</h3>
                 <p className="mt-2 text-2xl font-semibold text-green-900 dark:text-green-400">
                   {formatCurrency(totalToCollect)}
                 </p>
@@ -227,21 +227,21 @@ export default function IndividualDebtsPage() {
             </div>
 
             <div className={`card ${
-              netBalance >= 0 
-                ? 'bg-blue-50 dark:bg-blue-900/10' 
+              netBalance >= 0
+                ? 'bg-blue-50 dark:bg-blue-900/10'
                 : 'bg-orange-50 dark:bg-orange-900/10'
             }`}>
               <div className="p-4">
                 <h3 className={`text-sm font-medium ${
-                  netBalance >= 0 
-                    ? 'text-blue-900 dark:text-blue-400' 
+                  netBalance >= 0
+                    ? 'text-blue-900 dark:text-blue-400'
                     : 'text-orange-900 dark:text-orange-400'
                 }`}>
-                  Net Balance
+                  Số Dư
                 </h3>
                 <p className={`mt-2 text-2xl font-semibold ${
-                  netBalance >= 0 
-                    ? 'text-blue-900 dark:text-blue-400' 
+                  netBalance >= 0
+                    ? 'text-blue-900 dark:text-blue-400'
                     : 'text-orange-900 dark:text-orange-400'
                 }`}>
                   {formatCurrency(netBalance)}
@@ -252,14 +252,14 @@ export default function IndividualDebtsPage() {
 
           <div className="card">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Debts Owed</h2>
+              <h2 className="text-xl font-semibold mb-4">Các Khoản Đang Nợ</h2>
               <DebtTable debts={debtsOwed} type="owed" />
             </div>
           </div>
 
           <div className="card">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Debts to Collect</h2>
+              <h2 className="text-xl font-semibold mb-4">Các Khoản Cho Vay</h2>
               <DebtTable debts={debtsToCollect} type="collect" />
             </div>
           </div>

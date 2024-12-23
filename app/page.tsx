@@ -98,8 +98,8 @@ export default function Home() {
 
   const features = [
     {
-      title: 'Add New Debt',
-      description: 'Record new debts for group members',
+      title: 'Thêm Khoản Nợ Mới',
+      description: 'Ghi nhận khoản nợ mới cho thành viên nhóm',
       href: '/debts/new',
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,8 +108,8 @@ export default function Home() {
       ),
     },
     {
-      title: 'Group Overview',
-      description: 'View total debts for the entire group',
+      title: 'Tổng Quan Nhóm',
+      description: 'Xem tổng nợ của cả nhóm',
       href: '/debts/group',
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,8 +118,8 @@ export default function Home() {
       ),
     },
     {
-      title: 'Individual Debts',
-      description: 'Check detailed debts for each person',
+      title: 'Nợ Cá Nhân',
+      description: 'Xem chi tiết nợ của từng người',
       href: '/debts/individual',
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -166,10 +166,10 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold sm:text-5xl mb-4">
-            Group Debt Manager
+            Quản Lý Nợ Nhóm
           </h1>
           <p className="text-xl text-muted-foreground">
-            Track and manage shared expenses within your group
+            Theo dõi và quản lý chi phí chung trong nhóm của bạn
           </p>
         </div>
 
@@ -177,28 +177,28 @@ export default function Home() {
         <div className="grid gap-6 mb-12 grid-cols-1 md:grid-cols-3">
           <div className="card bg-primary/5 border-primary/20">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-primary mb-2">Monthly Total Debts</h3>
+              <h3 className="text-lg font-semibold text-primary mb-2">Tổng Nợ Tháng</h3>
               <p className="text-3xl font-bold text-primary">{formatCurrency(monthlyTotal)}</p>
-              <p className="text-sm text-primary/70 mt-1">Total debts for current month</p>
+              <p className="text-sm text-primary/70 mt-1">Tổng số nợ trong tháng hiện tại</p>
             </div>
           </div>
 
           <div className="card bg-red-50 dark:bg-red-900/10">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Top Debtor</h3>
+              <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Con Nợ Nhiều Nhất</h3>
               <p className="text-3xl font-bold text-red-900 dark:text-red-400">{topDebtor?.userName}</p>
               <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                Owes {formatCurrency(topDebtor?.totalOwing || 0)}
+                Nợ {formatCurrency(topDebtor?.totalOwing || 0)}
               </p>
             </div>
           </div>
 
           <div className="card bg-green-50 dark:bg-green-900/10">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-green-900 dark:text-green-400 mb-2">Top Creditor</h3>
+              <h3 className="text-lg font-semibold text-green-900 dark:text-green-400 mb-2">Chủ Nợ Nhiều Nhất</h3>
               <p className="text-3xl font-bold text-green-900 dark:text-green-400">{topCreditor?.userName}</p>
               <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                Owed {formatCurrency(topCreditor?.totalOwed || 0)}
+                Được nợ {formatCurrency(topCreditor?.totalOwed || 0)}
               </p>
             </div>
           </div>
@@ -207,23 +207,23 @@ export default function Home() {
         {/* User Statistics Table */}
         <div className="card mb-12">
           <div className="p-6 border-b border-border">
-            <h3 className="text-lg font-semibold">User Statistics</h3>
+            <h3 className="text-lg font-semibold">Thống Kê Người Dùng</h3>
           </div>
           <div className="table-container">
             <table className="table">
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th className="text-right">Total Owed (Lending)</th>
-                  <th className="text-right">Total Owing (Borrowing)</th>
-                  <th className="text-right">Net Balance</th>
+                  <th>Người Dùng</th>
+                  <th className="text-right">Tổng Được Nợ (Cho Vay)</th>
+                  <th className="text-right">Tổng Đang Nợ (Vay)</th>
+                  <th className="text-right">Số Dư</th>
                 </tr>
               </thead>
               <tbody>
                 {userStats.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="text-center py-8 text-muted-foreground">
-                      No user statistics available.
+                      Chưa có thống kê người dùng.
                     </td>
                   </tr>
                 ) : (
