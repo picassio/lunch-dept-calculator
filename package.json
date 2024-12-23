@@ -6,7 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop debt-manager",
+    "pm2:restart": "pm2 restart debt-manager",
+    "pm2:logs": "pm2 logs debt-manager",
+    "pm2:monitor": "pm2 monit debt-manager"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
@@ -14,6 +19,7 @@
     "@hookform/resolvers": "^3.9.1",
     "@prisma/client": "^6.1.0",
     "next": "15.1.2",
+    "pm2": "^5.4.3",
     "prisma": "^6.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

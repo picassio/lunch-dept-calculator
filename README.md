@@ -168,6 +168,8 @@ npm run dev
 
 ## Deployment
 
+### Standard Deployment
+
 1. Build the application:
 ```bash
 npm run build
@@ -177,6 +179,49 @@ npm run build
 ```bash
 npm start
 ```
+
+### PM2 Deployment (Recommended)
+
+PM2 is a process manager for Node.js applications that helps you keep your app running forever, reload it without downtime, and manage it in production.
+
+1. Configure environment variables:
+```bash
+# Copy the example .env file if you haven't already
+cp env.example .env
+
+# Update the following variables in .env:
+PORT=8080                    # Your custom port
+HOST=your-ip-or-domain      # Your custom host/IP
+DATABASE_URL="mysql://root:rootpassword@localhost:3306/debt_manager"
+NEXT_PUBLIC_API_URL="http://your-domain:8080/api"
+```
+
+2. Build and start with PM2:
+```bash
+# Build the application
+npm run build
+
+# Start with PM2
+npm run pm2:start
+```
+
+3. Available PM2 Commands:
+```bash
+npm run pm2:start    # Start the application
+npm run pm2:stop     # Stop the application
+npm run pm2:restart  # Restart the application
+npm run pm2:logs     # View application logs
+npm run pm2:monitor  # Monitor application performance
+```
+
+PM2 Features:
+- Process management
+- Auto-restart on crashes
+- Load balancing
+- Runtime metrics
+- Log management
+
+The application will run on your specified port and host using PM2 process manager. You can monitor the application status and performance using the PM2 monitor command.
 
 ## Contributing
 
