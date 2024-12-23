@@ -4,8 +4,9 @@ A web application for managing shared expenses and debts within a group. Built w
 
 ## Features
 
-- 👥 User Management: Add and manage group members
-- 🍽️ Menu Items: Manage food and drink items with prices
+- 👥 User Management: Add, edit, and delete group members
+- 🏪 Restaurant Management: Add, edit, and delete restaurants
+- 🍽️ Menu Items: Manage food and drink items with prices and restaurant associations
 - 💰 Debt Tracking: Record and track who owes money to whom
 - 📊 Group Overview: View total debts for the entire group
 - 👤 Individual View: Check detailed debts for each person
@@ -128,8 +129,9 @@ npm run dev
 ```
 
 2. Test the application:
-   - Add users through the Users page
-   - Create menu items
+   - Add and manage users through the Users page
+   - Create and manage restaurants through the Restaurants page
+   - Create menu items with restaurant associations
    - Record debts
    - View group and individual summaries
 
