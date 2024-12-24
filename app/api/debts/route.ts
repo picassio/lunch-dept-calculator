@@ -23,7 +23,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { debtorId, creditorId, menuItemId, quantity } = body;
+    const { debtorId, creditorId, menuItemId, quantity, customPrice } = body;
 
     if (!debtorId || !creditorId || !menuItemId || !quantity) {
       return NextResponse.json(
@@ -44,7 +44,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const totalPrice = menuItem.price * quantity;
+    // Use custom price if provided, otherwise use menu item's default price
+    const pricePerItem = customPrice !== undefined ? customPrice : menuItem.price;
+    const totalPrice = pricePerItem * quantity;
 
     const debt = await prisma.debt.create({
       data: {

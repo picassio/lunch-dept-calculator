@@ -14,6 +14,9 @@ const debtSchema = z.object({
   quantity: z.string().refine((val) => !isNaN(parseInt(val)) && parseInt(val) > 0, {
     message: 'Số lượng phải là số dương',
   }),
+  customPrice: z.string().optional().refine((val) => !val || (!isNaN(parseInt(val)) && parseInt(val) >= 0), {
+    message: 'Giá tùy chỉnh phải là số không âm',
+  }),
 }).refine((data) => data.debtorId !== data.creditorId, {
   message: "Con Nợ và Chủ Nợ không thể là cùng một người",
   path: ['creditorId'],
@@ -90,17 +93,20 @@ export default function NewDebtPage() {
     }
   }, [restaurantId, menuItems]);
 
+  const customPrice = watch('customPrice');
+
   useEffect(() => {
     if (menuItemId && quantity) {
       const menuItem = menuItems.find(item => item.id === parseInt(menuItemId));
       if (menuItem) {
         setSelectedMenuItem(menuItem);
-        setCalculatedTotal(menuItem.price * parseInt(quantity));
+        const price = customPrice ? parseInt(customPrice) : menuItem.price;
+        setCalculatedTotal(price * parseInt(quantity));
       }
     } else {
       setCalculatedTotal(0);
     }
-  }, [menuItemId, quantity, menuItems]);
+  }, [menuItemId, quantity, menuItems, customPrice]);
 
   const onSubmit = async (data: DebtFormData) => {
     try {
@@ -112,6 +118,7 @@ export default function NewDebtPage() {
           creditorId: parseInt(data.creditorId),
           menuItemId: parseInt(data.menuItemId),
           quantity: parseInt(data.quantity),
+          customPrice: data.customPrice ? parseInt(data.customPrice) : undefined,
         }),
       });
 
@@ -240,19 +247,44 @@ export default function NewDebtPage() {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="quantity" className="block text-sm font-medium mb-1">
-                Số Lượng
-              </label>
-              <input
-                {...register('quantity')}
-                type="number"
-                min="1"
-                className="input w-32"
-                placeholder="Nhập số lượng"
-              />
-              {errors.quantity && (
-                <p className="mt-1 text-sm text-red-500">{errors.quantity.message}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="quantity" className="block text-sm font-medium mb-1">
+                  Số Lượng
+                </label>
+                <input
+                  {...register('quantity')}
+                  type="number"
+                  min="1"
+                  className="input w-32"
+                  placeholder="Nhập số lượng"
+                />
+                {errors.quantity && (
+                  <p className="mt-1 text-sm text-red-500">{errors.quantity.message}</p>
+                )}
+              </div>
+
+              {selectedMenuItem && (
+                <div>
+                  <label htmlFor="customPrice" className="block text-sm font-medium mb-1">
+                    Giá Tùy Chỉnh (không bắt buộc)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      {...register('customPrice')}
+                      type="number"
+                      min="0"
+                      className="input w-32"
+                      placeholder={`${selectedMenuItem.price}`}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      Mặc định: {formatCurrency(selectedMenuItem.price)}
+                    </span>
+                  </div>
+                  {errors.customPrice && (
+                    <p className="mt-1 text-sm text-red-500">{errors.customPrice.message}</p>
+                  )}
+                </div>
               )}
             </div>
 
