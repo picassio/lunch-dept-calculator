@@ -130,42 +130,6 @@ form3/
   npx prisma studio
   ```
 
-### Adding New Features
-
-1. **Database Changes**
-   - Update `prisma/schema.prisma`
-   - Run `npx prisma migrate dev`
-   - Update affected API routes
-
-2. **API Routes**
-   - Add new routes in `app/api/`
-   - Follow RESTful conventions
-   - Include proper error handling
-
-3. **Frontend Components**
-   - Create new components in `app/components/`
-   - Use TypeScript interfaces for props
-   - Follow existing styling patterns
-
-4. **Pages**
-   - Add new pages in appropriate directories
-   - Use server components where possible
-   - Include proper loading and error states
-
-### Testing
-
-1. Run the development server:
-```bash
-npm run dev
-```
-
-2. Test the application:
-   - Add and manage users through the Users page
-   - Create and manage restaurants through the Restaurants page
-   - Create menu items with restaurant associations
-   - Record debts
-   - View group and individual summaries
-
 ## Deployment
 
 ### Standard Deployment
