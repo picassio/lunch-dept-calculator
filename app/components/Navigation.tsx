@@ -127,19 +127,18 @@ const Navigation = () => {
 
       {/* Mobile menu */}
       <div 
-        className={`md:hidden border-t border-border transform transition-all duration-300 ease-in-out ${
-          isOpen 
-            ? 'opacity-100 translate-y-0' 
-            : 'opacity-0 -translate-y-2 pointer-events-none'
+        className={`fixed inset-x-0 top-[65px] bg-background/95 backdrop-blur-sm border-b border-border md:hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'
         }`}
+        aria-hidden={!isOpen}
       >
-        <div className="px-2 pt-2 pb-3 space-y-1">
+        <div className="px-4 py-3 space-y-3 max-h-[calc(100vh-65px)] overflow-y-auto">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out flex items-center gap-2 ${
+              className={`block px-3 py-2.5 rounded-md text-base font-medium transition-all duration-200 ease-in-out flex items-center gap-3 ${
                 pathname === link.href
                   ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -148,9 +147,9 @@ const Navigation = () => {
               <Image 
                 src={link.icon} 
                 alt="" 
-                width={16} 
-                height={16} 
-                className={`w-4 h-4 ${pathname === link.href ? 'brightness-200' : ''}`}
+                width={18} 
+                height={18} 
+                className={`w-[18px] h-[18px] ${pathname === link.href ? 'brightness-200' : ''}`}
               />
               {link.label}
             </Link>
