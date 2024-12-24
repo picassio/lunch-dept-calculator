@@ -212,7 +212,7 @@ export default function GroupDebtsPage() {
                       <td>{debt.creditor.name}</td>
                       <td>{debt.menuItem.name}</td>
                       <td className="text-center">{debt.quantity}</td>
-                      <td className="text-right">{formatCurrency(debt.menuItem.price)}</td>
+                      <td className="text-right">{formatCurrency(debt.totalPrice / debt.quantity)}</td>
                       <td className="text-right font-medium">
                         {formatCurrency(debt.totalPrice)}
                       </td>
