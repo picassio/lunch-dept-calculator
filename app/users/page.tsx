@@ -140,7 +140,7 @@ export default function UsersPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-1">
-                Name
+                Tên
               </label>
               <input
                 {...register('name')}
@@ -211,7 +211,7 @@ export default function UsersPage() {
           <table className="table">
             <thead>
               <tr>
-                <th>Name</th>
+                <th>Tên</th>
                 <th>Email</th>
                 <th className="text-right">Actions</th>
               </tr>

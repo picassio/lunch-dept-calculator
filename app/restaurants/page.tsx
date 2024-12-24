@@ -137,12 +137,12 @@ export default function RestaurantsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="card">
         <div className="p-6">
-          <h1 className="text-2xl font-semibold mb-6">Restaurants</h1>
+          <h1 className="text-2xl font-semibold mb-6">Cửa hàng</h1>
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-1">
-                Name
+                Tên cửa hàng
               </label>
               <input
                 {...register('name')}
@@ -198,8 +198,8 @@ export default function RestaurantsPage() {
           <table className="table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Menu Items</th>
+                <th>Tên cửa hàng</th>
+                <th>Danh mục món</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>

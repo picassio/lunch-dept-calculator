@@ -11,14 +11,14 @@ const menuItemSchema = z.object({
   price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
     message: 'Price must be a positive number',
   }),
-  category: z.enum(['food', 'drink'], {
+  category: z.enum(['food', 'drink', 'other'], {
     required_error: 'Category is required',
   }),
   restaurantId: z.string().min(1, 'Restaurant is required'),
 });
 
 type MenuItemFormData = z.infer<typeof menuItemSchema>;
-type Category = 'food' | 'drink';
+type Category = 'food' | 'drink' | 'other';
 
 interface Restaurant {
   id: number;
@@ -157,13 +157,13 @@ export default function MenuItemsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="card">
         <div className="p-6">
-          <h1 className="text-2xl font-semibold mb-6">Menu Items</h1>
+          <h1 className="text-2xl font-semibold mb-6">Thực đơn</h1>
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium mb-1">
-                  Name
+                  Tên món
                 </label>
                 <input
                   {...register('name')}
@@ -178,7 +178,7 @@ export default function MenuItemsPage() {
 
               <div>
                 <label htmlFor="price" className="block text-sm font-medium mb-1">
-                  Price (VND)
+                  Giá (VND)
                 </label>
                 <input
                   {...register('price')}
@@ -194,7 +194,7 @@ export default function MenuItemsPage() {
 
               <div>
                 <label htmlFor="category" className="block text-sm font-medium mb-1">
-                  Category
+                  Phân loại
                 </label>
                 <select
                   {...register('category')}
@@ -203,6 +203,7 @@ export default function MenuItemsPage() {
                   <option value="">Select category</option>
                   <option value="food">Food</option>
                   <option value="drink">Drink</option>
+                  <option value="other">Other</option>
                 </select>
                 {errors.category && (
                   <p className="mt-1 text-sm text-red-500">{errors.category.message}</p>
@@ -211,7 +212,7 @@ export default function MenuItemsPage() {
 
               <div>
                 <label htmlFor="restaurantId" className="block text-sm font-medium mb-1">
-                  Restaurant
+                  Cửa hàng
                 </label>
                 <select
                   {...register('restaurantId')}
@@ -273,10 +274,10 @@ export default function MenuItemsPage() {
           <table className="table">
             <thead>
               <tr>
-                <th>Name</th>
+                <th>Tên món</th>
                 <th className="text-right">Price</th>
-                <th>Category</th>
-                <th>Restaurant</th>
+                <th>Phân loại</th>
+                <th>Cửa hàng</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>
@@ -293,13 +294,15 @@ export default function MenuItemsPage() {
                     <td className="font-medium">{item.name}</td>
                     <td className="text-right font-medium">{formatCurrency(item.price)}</td>
                     <td>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         item.category === 'food' 
                           ? 'bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-400'
-                          : 'bg-blue-100 text-blue-800 dark:bg-blue-800/20 dark:text-blue-400'
-                      }`}>
+                          : item.category === 'drink'
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-800/20 dark:text-blue-400'
+                          : 'bg-gray-100 text-gray-800 dark:bg-gray-800/20 dark:text-red-400'
+                        }`}>
                         {item.category}
-                      </span>
+                        </span>
                     </td>
                     <td>{item.restaurant.name}</td>
                     <td className="text-right">

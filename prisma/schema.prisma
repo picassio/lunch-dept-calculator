@@ -29,7 +29,7 @@ model MenuItem {
   id           Int        @id @default(autoincrement())
   name         String
   price        Float
-  category     String     // food or drink
+  category     String     // food, drink, or other
   restaurantId Int
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   debts        Debt[]
